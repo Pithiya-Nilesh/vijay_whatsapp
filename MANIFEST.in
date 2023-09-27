@@ -1,0 +1,18 @@
+include MANIFEST.in
+include requirements.txt
+include *.json
+include *.md
+include *.py
+include *.txt
+recursive-include vijay_whatsapp *.css
+recursive-include vijay_whatsapp *.csv
+recursive-include vijay_whatsapp *.html
+recursive-include vijay_whatsapp *.ico
+recursive-include vijay_whatsapp *.js
+recursive-include vijay_whatsapp *.json
+recursive-include vijay_whatsapp *.md
+recursive-include vijay_whatsapp *.png
+recursive-include vijay_whatsapp *.py
+recursive-include vijay_whatsapp *.svg
+recursive-include vijay_whatsapp *.txt
+recursive-exclude vijay_whatsapp *.pyc
