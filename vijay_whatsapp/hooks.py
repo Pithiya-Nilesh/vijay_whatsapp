@@ -34,6 +34,18 @@ app_license = "MIT"
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
 
+fixtures = [
+    
+     {"dt":"Custom Field","filters":[
+        [
+            "module","in",[
+               "Vijay Whatsapp"
+            ]
+        ]
+    ]},
+]
+
+
 # Home Pages
 # ----------
 
@@ -118,34 +130,42 @@ app_license = "MIT"
 # ---------------
 # Hook on document methods and events
 
-# doc_events = {
-#	"*": {
-#		"on_update": "method",
-#		"on_cancel": "method",
-#		"on_trash": "method"
-#	}
-# }
+doc_events = {
+	"Sales Order": {
+        "after_insert": "vijay_whatsapp.api.on_sales_order",
+        "on_update": "vijay_whatsapp.api.on_sales_order"
+	},
+    "Sales Invoice": {
+        "after_insert": "vijay_whatsapp.api.on_sales_invoice",
+        "on_update": "vijay_whatsapp.api.on_sales_invoice"
+	}
+}
 
 # Scheduled Tasks
 # ---------------
 
-# scheduler_events = {
-#	"all": [
-#		"vijay_whatsapp.tasks.all"
-#	],
-#	"daily": [
-#		"vijay_whatsapp.tasks.daily"
-#	],
-#	"hourly": [
-#		"vijay_whatsapp.tasks.hourly"
-#	],
-#	"weekly": [
-#		"vijay_whatsapp.tasks.weekly"
-#	],
-#	"monthly": [
-#		"vijay_whatsapp.tasks.monthly"
-#	],
-# }
+scheduler_events = {
+	# "all": [
+	# 	"vijay_whatsapp.tasks.all"
+	# ],
+	# "daily": [
+	# 	"vijay_whatsapp.tasks.daily"
+	# ],
+	# "hourly": [
+	# 	"vijay_whatsapp.tasks.hourly"
+	# ],
+	# "weekly": [
+	# 	"vijay_whatsapp.tasks.weekly"
+	# ],
+	# "monthly": [
+	# 	"vijay_whatsapp.tasks.monthly"
+	# ],
+
+        "delete_sent_pdf_for_whatsapp": 
+        { 
+            "0 0 1,15 * *": ["vijay_whatsapp.api.delete_sent_file"]
+        },
+}
 
 # Testing
 # -------
