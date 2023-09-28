@@ -10,13 +10,13 @@ from frappe import enqueue
 def on_sales_order(doc, method):
     if method == 'whitelist':
         doc = frappe.get_doc("Sales Order", doc)
-    if doc.custom_whatsapp_no and doc.custom_send_whatsapp_message:
+    if doc.contact_mobile and doc.custom_send_whatsapp_message:
         if check_whatsapp_api():   
             file = create_and_store_file(doc)
             # file_url = frappe.utils.get_url()+file["file_url"]
 
             # '8238875334'
-            whatsapp_no = [doc.custom_whatsapp_no]
+            whatsapp_no = [doc.contact_mobile]
             for sales_team in doc.sales_team:
                 if sales_team.custom_whatsapp_no:
                     whatsapp_no.append(sales_team.custom_whatsapp_no)
@@ -26,8 +26,10 @@ def on_sales_order(doc, method):
                 if wpn.whatsapp_no and wpn.enable == 1:
                     whatsapp_no.append(wpn.whatsapp_no)
 
-            send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=frappe.utils.get_url()+file["file_url"], filename=file["file_name"]) 
+            # print("\n\n adfa", whatsapp_no, "\n\n")
+
+            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=frappe.utils.get_url()+file["file_url"], filename=file["file_name"]) 
 
 
 @frappe.whitelist()
@@ -61,17 +63,21 @@ def send_whatsapp_message(numbers, message, file_url, filename):
     url, instance_id, access_token = get_whatsapp_credentials()
     print("in send whatsapp message")
     for number in numbers:
-        # url = f"https://x3.woonotif.com/api/send.php?number={number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
+        # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
         url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"
+        
+        # print("\n\n url", url, "\n\n")
         response = requests.get(url)
 
-        print("\n\n response", response, "\n\n")
-        print("\n\n response", response.text, "\n\n")
+        # print("\n\n response", response, "\n\n")
+        # print("\n\n response", response.text, "\n\n")
 
 def get_whatsapp_credentials():
     url = frappe.db.get_single_value("Whatsapp Settings", "url")
     instance_id = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "instance_id", raise_exception=False)
     access_token = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "access_token", raise_exception=False)
+    print("\n\n instance id", instance_id)
+    print("\n\n access token", access_token)
     return url, instance_id, access_token
 
 

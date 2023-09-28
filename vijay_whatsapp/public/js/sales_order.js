@@ -12,6 +12,11 @@ frappe.ui.form.on('Sales Order', {
                     callback: function(r) {
                         if (!r.exc) {
                             // Handle success
+                            frappe.msgprint({
+                                title: __('Notification'),
+                                indicator: 'green',
+                                message: __('Whatsapp Message Sent Successfully')
+                            });
                             console.log('Message sent successfully.');
                         } else {
                             // Handle error
