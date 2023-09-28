@@ -3,6 +3,7 @@ import requests
 from frappe.utils.file_manager import save_file_on_filesystem, delete_file
 from frappe.utils.pdf import get_pdf
 from frappe.utils.password import get_decrypted_password
+from frappe.utils import get_url
 import json
 from frappe import enqueue
 
@@ -28,8 +29,14 @@ def on_sales_order(doc, method):
 
             # print("\n\n adfa", whatsapp_no, "\n\n")
 
+            file_url = f"{get_url()+file['file_url']}"
+            # file_url = "https://vijaymamra.frappe.cloud/files/Sales_Order_SAL-ORD-2023-00007.pdf"
+
+            # print("\n\n filasdf", file_url)
+
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=frappe.utils.get_url()+file["file_url"], filename=file["file_name"]) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name']) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url='https://vijaymamra.frappe.cloud/files/Sales_Order_SAL-ORD-2023-00007.pdf', filename=file["file_name"]) 
 
 
 @frappe.whitelist()
@@ -76,8 +83,8 @@ def get_whatsapp_credentials():
     url = frappe.db.get_single_value("Whatsapp Settings", "url")
     instance_id = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "instance_id", raise_exception=False)
     access_token = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "access_token", raise_exception=False)
-    print("\n\n instance id", instance_id)
-    print("\n\n access token", access_token)
+    # print("\n\n instance id", instance_id)
+    # print("\n\n access token", access_token)
     return url, instance_id, access_token
 
 
