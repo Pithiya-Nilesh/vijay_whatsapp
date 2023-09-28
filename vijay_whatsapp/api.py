@@ -27,25 +27,37 @@ def on_sales_order(doc, method):
                 if wpn.whatsapp_no and wpn.enable == 1:
                     whatsapp_no.append(wpn.whatsapp_no)
 
-            # print("\n\n adfa", whatsapp_no, "\n\n")
-
             file_url = f"{get_url()+file['file_url']}"
-            # file_url = "https://vijaymamra.frappe.cloud/files/Sales_Order_SAL-ORD-2023-00007.pdf"
-
-            # print("\n\n filasdf", file_url)
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
             enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name']) 
-            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url='https://vijaymamra.frappe.cloud/files/Sales_Order_SAL-ORD-2023-00007.pdf', filename=file["file_name"]) 
 
 
 @frappe.whitelist()
 def on_sales_invoice(doc, method):
     if method == 'whitelist':
         doc = frappe.get_doc("Sales Invoice", doc)
-    if doc.custom_whatsapp_no and doc.custom_send_whatsapp_message:
+    if doc.contact_mobile and doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            print("\n\n yes in if \n\n")
+            file = create_and_store_file(doc)
+            # file_url = frappe.utils.get_url()+file["file_url"]
+
+            # '8238875334'
+            whatsapp_no = [doc.contact_mobile]
+            for sales_team in doc.sales_team:
+                if sales_team.custom_whatsapp_no:
+                    whatsapp_no.append(sales_team.custom_whatsapp_no)
+
+            company = frappe.get_doc("Company", doc.company)
+            for wpn in company.custom_whatsapp_no:
+                if wpn.whatsapp_no and wpn.enable == 1:
+                    whatsapp_no.append(wpn.whatsapp_no)
+
+            file_url = f"{get_url()+file['file_url']}"
+            
+            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
+
         
 
 @frappe.whitelist()
