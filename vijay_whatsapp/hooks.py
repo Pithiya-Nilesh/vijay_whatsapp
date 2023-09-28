@@ -29,7 +29,11 @@ app_license = "MIT"
 # page_js = {"page" : "public/js/file.js"}
 
 # include js in doctype views
-# doctype_js = {"doctype" : "public/js/doctype.js"}
+doctype_js = {
+    			"Sales Order" : "public/js/sales_order.js",
+            	"Sales Invoice" : "public/js/sales_invoice.js",
+    		}
+
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
 # doctype_tree_js = {"doctype" : "public/js/doctype_tree.js"}
 # doctype_calendar_js = {"doctype" : "public/js/doctype_calendar.js"}
@@ -132,12 +136,12 @@ fixtures = [
 
 doc_events = {
 	"Sales Order": {
-        "after_insert": "vijay_whatsapp.api.on_sales_order",
-        "on_update": "vijay_whatsapp.api.on_sales_order"
+        "on_submit": "vijay_whatsapp.api.on_sales_order",
+        # "on_update": "vijay_whatsapp.api.on_sales_order"
 	},
     "Sales Invoice": {
-        "after_insert": "vijay_whatsapp.api.on_sales_invoice",
-        "on_update": "vijay_whatsapp.api.on_sales_invoice"
+        "on_submit": "vijay_whatsapp.api.on_sales_invoice"
+        # "after_insert": "vijay_whatsapp.api.on_sales_invoice",
 	}
 }
 
