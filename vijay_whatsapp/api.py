@@ -2,6 +2,7 @@ import frappe
 import requests
 from frappe.utils.file_manager import save_file_on_filesystem, delete_file
 from frappe.utils.pdf import get_pdf
+from frappe.utils.password import get_decrypted_password
 import json
 from frappe import enqueue
 
@@ -69,8 +70,8 @@ def send_whatsapp_message(numbers, message, file_url, filename):
 
 def get_whatsapp_credentials():
     url = frappe.db.get_single_value("Whatsapp Settings", "url")
-    instance_id = frappe.utils.password.get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "instance_id", raise_exception=False)
-    access_token = frappe.utils.password.get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "access_token", raise_exception=False)
+    instance_id = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "instance_id", raise_exception=False)
+    access_token = get_decrypted_password("Whatsapp Settings", "Whatsapp Settings", "access_token", raise_exception=False)
     return url, instance_id, access_token
 
 
