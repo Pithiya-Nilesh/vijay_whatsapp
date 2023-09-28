@@ -25,7 +25,8 @@ def on_sales_order(doc, method):
             company = frappe.get_doc("Company", doc.company)
             for wpn in company.custom_whatsapp_no:
                 if wpn.whatsapp_no and wpn.enable == 1:
-                    whatsapp_no.append(wpn.whatsapp_no)
+                    if wpn.whatsapp_no not in whatsapp_no:
+                        whatsapp_no.append(wpn.whatsapp_no)
 
             file_url = f"{get_url()+file['file_url']}"
 
@@ -46,7 +47,8 @@ def on_sales_invoice(doc, method):
             whatsapp_no = [doc.contact_mobile]
             for sales_team in doc.sales_team:
                 if sales_team.custom_whatsapp_no:
-                    whatsapp_no.append(sales_team.custom_whatsapp_no)
+                    if sales_team.custom_whatsapp_no not in whatsapp_no:
+                        whatsapp_no.append(sales_team.custom_whatsapp_no)
 
             company = frappe.get_doc("Company", doc.company)
             for wpn in company.custom_whatsapp_no:
@@ -72,15 +74,33 @@ def on_payment(doc, method):
 @frappe.whitelist()
 def on_purchase_order(doc, method):
     if method == 'whitelist':
-        doc = frappe.get_doc("Sales Order", doc)
-    if doc.custom_whatsapp_no and doc.custom_send_whatsapp_message:
+        doc = frappe.get_doc("Purchase Order", doc)
+    if doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            print("\n\n yes in if \n\n")
+            file = create_and_store_file(doc)
+
+            whatsapp_no = []
+            for purchase_team in doc.custom_whatsapp_no_info:
+                if purchase_team.whatsapp_no and purchase_team.enable == 1:
+                    whatsapp_no.append(purchase_team.whatsapp_no)
+
+            company = frappe.get_doc("Company", doc.company)
+            for wpn in company.custom_whatsapp_no:
+                if wpn.whatsapp_no and wpn.enable == 1:
+                    if wpn.whatsapp_no not in whatsapp_no:
+                        whatsapp_no.append(wpn.whatsapp_no)
+
+            file_url = f"{get_url()+file['file_url']}"
+
+            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name']) 
+
+            
 
 
 def send_whatsapp_message(numbers, message, file_url, filename):
     url, instance_id, access_token = get_whatsapp_credentials()
-    print("in send whatsapp message")
+    # print("in send whatsapp message")
     for number in numbers:
         # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
         url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"

@@ -32,6 +32,7 @@ app_license = "MIT"
 doctype_js = {
     			"Sales Order" : "public/js/sales_order.js",
             	"Sales Invoice" : "public/js/sales_invoice.js",
+            	"Purchase Order" : "public/js/purchase_order.js",
     		}
 
 # doctype_list_js = {"doctype" : "public/js/doctype_list.js"}
@@ -141,6 +142,10 @@ doc_events = {
 	},
     "Sales Invoice": {
         "on_submit": "vijay_whatsapp.api.on_sales_invoice"
+        # "after_insert": "vijay_whatsapp.api.on_sales_invoice",
+	},
+    "Purchase Order": {
+        "on_submit": "vijay_whatsapp.api.on_purchase_order"
         # "after_insert": "vijay_whatsapp.api.on_sales_invoice",
 	}
 }
