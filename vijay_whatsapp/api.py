@@ -61,8 +61,8 @@ def send_whatsapp_message(numbers, message, file_url, filename):
     url, instance_id, access_token = get_whatsapp_credentials()
     print("in send whatsapp message")
     for number in numbers:
-        url = f"https://x3.woonotif.com/api/send.php?number={number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
-        # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"
+        # url = f"https://x3.woonotif.com/api/send.php?number={number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
+        url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"
         response = requests.get(url)
 
         print("\n\n response", response, "\n\n")
