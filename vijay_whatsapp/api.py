@@ -26,8 +26,8 @@ def on_sales_order(doc, method):
                 if wpn.whatsapp_no and wpn.enable == 1:
                     whatsapp_no.append(wpn.whatsapp_no)
 
-            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=frappe.utils.get_url()+file["file_url"], filename=file["file_name"]) 
+            send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=frappe.utils.get_url()+file["file_url"], filename=file["file_name"]) 
 
 
 @frappe.whitelist()
