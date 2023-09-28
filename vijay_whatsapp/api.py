@@ -54,7 +54,7 @@ def on_sales_invoice(doc, method):
                     whatsapp_no.append(wpn.whatsapp_no)
 
             file_url = f"{get_url()+file['file_url']}"
-            
+
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
             enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
 
@@ -114,7 +114,7 @@ def create_and_store_file(doc):
 
     html_content = frappe.get_print(doc.doctype, doc.name)
     pdf_content = get_pdf(html_content) 
-    pdf_file_name = f"Sales_Order_{doc.name}.pdf"
+    pdf_file_name = f"{doc.doctype}-{doc.name}.pdf"
 
     file = save_file_on_filesystem(pdf_file_name, pdf_content)
 
