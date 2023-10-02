@@ -31,10 +31,12 @@ def on_sales_order(doc, method):
                     if wpn.whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(wpn.whatsapp_no)
 
-            file_url = f"{get_url()+file['file_url']}"
+            # file_url = f"{get_url()+file['file_url']}"
+            file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name']) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
 @frappe.whitelist()
@@ -74,29 +76,32 @@ def on_outstanding_sales_invoice_reminder():
     '''
     from frappe.utils import today
 
-    if check_whatsapp_api():
-        data = frappe.db.get_list("Sales Invoice", filters={"due_date": '2023-10-29', "custom_send_whatsapp_message": 1, "status": ["Overdue", "Unpaid"], "contact_mobile": ("!=", '')}, fields=['name'])
+    if check_scheduler_is_enable():
+        if check_whatsapp_api():
+            data = frappe.db.get_list("Sales Invoice", filters={"due_date": '2023-10-29', "custom_send_whatsapp_message": 1, "status": ["Overdue", "Unpaid"], "contact_mobile": ("!=", '')}, fields=['name'])
 
-        for name in data:
-            doc = frappe.get_doc("Sales Invoice", name.name)
-            if doc.contact_mobile:
-                file = enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc)
-                
-                whatsapp_no = [doc.contact_mobile]
-                for sales_team in doc.sales_team:
-                    if sales_team.custom_whatsapp_no:
-                        if sales_team.custom_whatsapp_no not in whatsapp_no:
-                            whatsapp_no.append(sales_team.custom_whatsapp_no)
+            for name in data:
+                doc = frappe.get_doc("Sales Invoice", name.name)
+                if doc.contact_mobile:
+                    # file = enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc)
 
-                company = frappe.get_doc("Company", doc.company)
-                for wpn in company.custom_whatsapp_no:
-                    if wpn.whatsapp_no and wpn.enable == 1:
-                        whatsapp_no.append(wpn.whatsapp_no)
+                    file = create_and_store_file(doc)
+                    
+                    whatsapp_no = [doc.contact_mobile]
+                    for sales_team in doc.sales_team:
+                        if sales_team.custom_whatsapp_no:
+                            if sales_team.custom_whatsapp_no not in whatsapp_no:
+                                whatsapp_no.append(sales_team.custom_whatsapp_no)
 
-                file_url = f"{get_url()+file['file_url']}"
+                    company = frappe.get_doc("Company", doc.company)
+                    for wpn in company.custom_whatsapp_no:
+                        if wpn.whatsapp_no and wpn.enable == 1:
+                            whatsapp_no.append(wpn.whatsapp_no)
 
-                # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-                enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
+                    file_url = f"{get_url()+file['file_url']}"
+
+                    # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+                    enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
 
 
 @frappe.whitelist()
@@ -191,7 +196,7 @@ def on_delivery_note(doc, method):
             enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name']) 
 
             
-def send_whatsapp_message(numbers, message, file_url, filename):
+def send_whatsapp_message(numbers, message, file_url, filename, docname):
     '''
         send whatsapp message with file.
     '''
@@ -205,8 +210,9 @@ def send_whatsapp_message(numbers, message, file_url, filename):
         # print("\n\n url", url, "\n\n")
         response = requests.get(url)
 
-        # print("\n\n response", response, "\n\n")
-        # print("\n\n response", response.text, "\n\n")
+        enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=docname, whatsapp_no=number, response=json.loads(response.text))
+
+        # return response
 
 
 def get_whatsapp_credentials():
@@ -233,6 +239,17 @@ def check_whatsapp_api():
         return True
     
 
+def check_scheduler_is_enable():
+    '''
+        check scheduler is enable.
+    '''
+    enable = frappe.db.get_single_value("Whatsapp Settings", "enable_scheduler")
+    if enable == 0:
+        return False
+    else:
+        return True
+
+
 def create_and_store_file(doc):
     '''
         get doctype html and convert to pdf and store in public file and store path in sent file doctype.
@@ -254,6 +271,21 @@ def create_and_store_file(doc):
     frappe.db.commit()
     
     return file
+
+
+@frappe.whitelist(allow_guest=True)
+def set_whatsapp_log(doctype, docname, whatsapp_no, response):
+    '''
+        set whatsapp log after message send
+    '''
+    # create a new e-invoice log
+    doc = frappe.new_doc('Whatsapp Log')
+    doc.w_doctype = doctype
+    doc.w_docname = docname
+    doc.whatsapp_no = whatsapp_no
+    doc.response = json.dumps(response, indent=4)
+    doc.insert()
+    frappe.db.commit()
 
 
 @frappe.whitelist(allow_guest=True)    

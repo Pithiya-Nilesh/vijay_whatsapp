@@ -5,7 +5,7 @@ frappe.ui.form.on('Sales Order', {
             if(frm.doc.contact_mobile !== '')
             {
                  frm.add_custom_button(__("Send Whatsapp Message"), function() {
-                    if(frm.doc.contact_mobile !== ''){
+                    if(frm.doc.contact_mobile === ''){
                         frappe.msgprint({
                             title: __('Notification'),
                             indicator: 'red',

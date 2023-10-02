@@ -10,7 +10,9 @@
   "enable",
   "url",
   "instance_id",
-  "access_token"
+  "access_token",
+  "column_break_qxcvy",
+  "enable_scheduler"
  ],
  "fields": [
   {
@@ -22,6 +24,7 @@
   {
    "fieldname": "url",
    "fieldtype": "Data",
+   "hidden": 1,
    "label": "URL"
   },
   {
@@ -33,12 +36,22 @@
    "fieldname": "access_token",
    "fieldtype": "Password",
    "label": "Access Token"
+  },
+  {
+   "fieldname": "column_break_qxcvy",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "enable_scheduler",
+   "fieldtype": "Check",
+   "label": "Enable Scheduler"
   }
  ],
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2023-09-27 15:45:28.232298",
+ "modified": "2023-10-02 16:58:11.438284",
  "modified_by": "Administrator",
  "module": "Vijay Whatsapp",
  "name": "Whatsapp Settings",

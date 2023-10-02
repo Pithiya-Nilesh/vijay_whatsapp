@@ -1,0 +1,76 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2023-10-02 17:06:37.035861",
+ "default_view": "List",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "w_doctype",
+  "w_docname",
+  "whatsapp_no",
+  "time",
+  "response"
+ ],
+ "fields": [
+  {
+   "fieldname": "w_doctype",
+   "fieldtype": "Link",
+   "label": "Doctype",
+   "options": "DocType",
+   "read_only": 1
+  },
+  {
+   "fieldname": "w_docname",
+   "fieldtype": "Dynamic Link",
+   "label": "Docname",
+   "options": "w_doctype",
+   "read_only": 1
+  },
+  {
+   "fieldname": "whatsapp_no",
+   "fieldtype": "Data",
+   "label": "Whatsapp No",
+   "read_only": 1
+  },
+  {
+   "fieldname": "response",
+   "fieldtype": "Code",
+   "label": "Response",
+   "options": "JSON",
+   "read_only": 1
+  },
+  {
+   "default": "now",
+   "fieldname": "time",
+   "fieldtype": "Datetime",
+   "label": "time",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2023-10-02 18:18:47.890276",
+ "modified_by": "Administrator",
+ "module": "Vijay Whatsapp",
+ "name": "Whatsapp Log",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
