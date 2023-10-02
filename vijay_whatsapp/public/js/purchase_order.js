@@ -26,9 +26,12 @@ frappe.ui.form.on('Purchase Order', {
                     })
                 })
         }
+       
+	},
 
-        // Fetch mobile numbers of users with the role "Accounts Manager"
-        frappe.call({
+    setup(frm){
+         // Fetch mobile numbers of users with the role "Accounts Manager"
+         frappe.call({
             method: 'vijay_whatsapp.api.get_mobile_numbers',
             args: {
                 roles: ['Purchase Manager', 'Purchase Master Manager']
@@ -37,11 +40,10 @@ frappe.ui.form.on('Purchase Order', {
                 if (r.message) {
                     var child_table = frm.doc.custom_whatsapp_no; // Replace with your actual child table fieldname
                     // Clear existing rows in the child table
-                    frappe.model.clear_table(frm.doc, child_table);
+                    frappe.model.clear_table(cur_frm.doc, "Whatsapp No", "custom_whatsapp_no");
 
                     // if(child_table === undefined || child_table === '')	       
                     // {
-                        console.log("adfadfsdfgsdfg")
                         for(var data = 0;data < r.message.length; data++){                        
                             var row = frappe.model.add_child(cur_frm.doc, "Whatsapp No", "custom_whatsapp_no");
                             row.whatsapp_no = r.message[data].mobile_no;
@@ -54,6 +56,5 @@ frappe.ui.form.on('Purchase Order', {
                 }
             }
         });
-        
-	},
+    }
 })

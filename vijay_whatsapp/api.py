@@ -147,7 +147,7 @@ def on_purchase_order(doc, method):
             file = create_and_store_file(doc)
 
             whatsapp_no = []
-            for purchase_team in doc.custom_whatsapp_no_info:
+            for purchase_team in doc.custom_whatsapp_no:
                 if purchase_team.whatsapp_no and purchase_team.enable == 1:
                     whatsapp_no.append(purchase_team.whatsapp_no)
 

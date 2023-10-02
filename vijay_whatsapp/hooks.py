@@ -157,6 +157,9 @@ doc_events = {
 	},
     "Delivery Note": {
         "on_submit": "vijay_whatsapp.api.on_delivery_note"
+	},
+    "Payment Entry": {
+        "on_submit": "vijay_whatsapp.api.on_payment_entry"
 	}
 }
 
