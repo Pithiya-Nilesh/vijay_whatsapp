@@ -1,10 +1,10 @@
-frappe.ui.form.on('Purchase Order', {
+frappe.ui.form.on('Delivery Note', {
 	refresh(frm) {
         // frm.doc.set_def_property("custom_whatsapp_no", "read_only", 0);
         if (!frm.is_dirty() || !frm.is_new()){
                 frm.add_custom_button(__("Send Whatsapp Message"), function() {
                     frappe.call({
-                        method: 'vijay_whatsapp.api.on_purchase_order',
+                        method: 'vijay_whatsapp.api.on_delivery_note',
                         args:{
                         'doc': frm.doc.name,
                         'method': 'whitelist'
@@ -26,22 +26,22 @@ frappe.ui.form.on('Purchase Order', {
                     })
                 })
         }
-
-        // Fetch mobile numbers of users with the role "Accounts Manager"
-        frappe.call({
+        
+         // Fetch mobile numbers of users with the role "Accounts Manager"
+         frappe.call({
             method: 'vijay_whatsapp.api.get_mobile_numbers',
             args: {
-                roles: ['Purchase Manager', 'Purchase Master Manager']
+                roles: ['Sales Manager']
             },
             callback: function(r) {
                 if (r.message) {
                     var child_table = frm.doc.custom_whatsapp_no; // Replace with your actual child table fieldname
+
                     // Clear existing rows in the child table
                     frappe.model.clear_table(frm.doc, child_table);
 
-                    // if(child_table === undefined || child_table === '')	       
-                    // {
-                        console.log("adfadfsdfgsdfg")
+                    if(child_table === undefined)	       
+                    {
                         for(var data = 0;data < r.message.length; data++){                        
                             var row = frappe.model.add_child(cur_frm.doc, "Whatsapp No", "custom_whatsapp_no");
                             row.whatsapp_no = r.message[data].mobile_no;
@@ -49,11 +49,10 @@ frappe.ui.form.on('Purchase Order', {
                             row.enable = 1;
                             frm.refresh_fields(child_table);
                         }
-                    // }
-
+                    }
                 }
             }
         });
-        
+
 	},
 })
