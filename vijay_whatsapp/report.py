@@ -72,8 +72,6 @@ def get_html_table(columns=None, data=None):
 
 
 
-
-
 # def get_url_to_report(name, report_type: str | None = None, doctype: str | None = None) -> str:
 #     from frappe.desk.utils import slug
 #     if report_type == "Report Builder":

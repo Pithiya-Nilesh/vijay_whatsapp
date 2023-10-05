@@ -202,6 +202,23 @@ def on_delivery_note(doc, method):
 @frappe.whitelist()
 def on_customer_receivable(name):
     file = send_report_pdf(name)
+    doc = frappe.get_doc("Customer", name)
+    if doc.contact_mobile:
+        if check_whatsapp_api():   
+            whatsapp_no = [doc.contact_mobile]
+
+            company = frappe.get_doc("Company", doc.company)
+            for wpn in company.custom_whatsapp_no:
+                if wpn.whatsapp_no and wpn.enable == 1:
+                    if wpn.whatsapp_no not in whatsapp_no:
+                        whatsapp_no.append(wpn.whatsapp_no)
+
+            file_url = f"{get_url()+file['file_url']}"
+            # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
+
+            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
 
@@ -346,5 +363,3 @@ def send_report_pdf(name):
     frappe.db.commit()
     
     return file
-
-
