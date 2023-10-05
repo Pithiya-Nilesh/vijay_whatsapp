@@ -1,10 +1,11 @@
 import frappe
 from frappe.utils.data import get_url
 from frappe.email.doctype.auto_email_report.auto_email_report import make_links, update_field_types
+from frappe.utils.data import today
 
 @frappe.whitelist(allow_guest=True)
 # def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
-def get_report_content(name):
+def get_receivable_report_content(name):
     filters = {'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120', 'party_type': 'Customer', 'party': name}
     """Returns file in for the report in given format"""
     
@@ -32,10 +33,55 @@ def get_report_content(name):
 
     columns = update_field_types(columns)
 
-    return get_html_table(columns, data)
+    return get_html_table("Accounts Receivable" ,columns, data)
 
 
-def get_html_table(columns=None, data=None):
+@frappe.whitelist(allow_guest=True)
+# def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
+def get_general_report_content(name):
+    from datetime import datetime # from python std library
+    from frappe.utils import add_to_date
+
+    filters = {
+    "company": "Vijay Mamra Private Limited",
+    "from_date": today(),
+    "to_date": add_to_date(datetime.now(), days=10, as_string=True),
+    "party_type": "Customer",
+    "party": f'["{name}"]',
+    "group_by": "Group by Voucher (Consolidated)",
+    "include_dimensions": "1",
+    "include_default_book_entries": "1"
+}
+    """Returns file in for the report in given format"""
+    
+    report = frappe.get_doc("Report", "General Ledger")
+
+    filters = frappe.parse_json(filters) if filters else {}
+
+    columns, data = report.get_data(
+        limit= 100,
+        user= frappe.session.user,
+        filters= filters,
+        as_dict=True,
+        ignore_prepared_report=True,
+        are_default_filters=False,
+    )
+   
+    # add serial numbers
+    columns.insert(0, frappe._dict(fieldname="idx", label="", width="30px"))
+    for i in range(len(data)):
+        data[i]["idx"] = i + 1
+
+    # if format == "HTML":
+    columns, data = make_links(columns, data)
+    # print("\n\n data", data)
+
+    columns = update_field_types(columns)
+
+    return get_html_table("General Ledger" ,columns, data)
+
+
+def get_html_table(report_name, columns=None, data=None):
     from datetime import timedelta
     from frappe.utils import (
 	add_to_date,
@@ -53,20 +99,20 @@ def get_html_table(columns=None, data=None):
     # print("\n\n column", columns)
     # print("\n\n data", data)
     date_time = global_date_format(now()) + " " + format_time(now())
-    report_doctype = frappe.db.get_value("Report", "Accounts Receivable", "ref_doctype")
+    report_doctype = frappe.db.get_value("Report", report_name, "ref_doctype")
 
     return frappe.render_template(
         # "frappe/templates/emails/auto_email_report.html",
         "vijay_whatsapp/templates/whatsapp_report.html",
         {
-            "title": "Accounts Receivable",
+            "title": report_name,
             "description": "this is description",
             "date_time": date_time,
             "columns": columns,
             "data": data,
-            "report_url": get_url_to_report("Accounts Receivable", "Script Report", report_doctype),
+            "report_url": get_url_to_report(report_name, "Script Report", report_doctype),
             "report_name": "Auto Email Report",
-            "edit_report_settings": get_link_to_form("Auto Email Report", "Accounts Receivable"),
+            "edit_report_settings": get_link_to_form("Auto Email Report", report_name),
         },
     )
 

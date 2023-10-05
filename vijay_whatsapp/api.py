@@ -201,13 +201,36 @@ def on_delivery_note(doc, method):
 
 @frappe.whitelist()
 def on_customer_receivable(name):
-    file = send_report_pdf(name)
+    file = send_report_pdf(name, "R")
     doc = frappe.get_doc("Customer", name)
-    if doc.contact_mobile:
+    if doc.mobile_no:
         if check_whatsapp_api():   
-            whatsapp_no = [doc.contact_mobile]
+            whatsapp_no = [doc.mobile_no]
 
-            company = frappe.get_doc("Company", doc.company)
+            company = frappe.get_doc("Company", "Vijay Mamra Private Limited")
+            for wpn in company.custom_whatsapp_no:
+                if wpn.whatsapp_no and wpn.enable == 1:
+                    if wpn.whatsapp_no not in whatsapp_no:
+                        whatsapp_no.append(wpn.whatsapp_no)
+
+            file_url = f"{get_url()+file['file_url']}"
+            # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
+
+            # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
+
+
+
+@frappe.whitelist()
+def on_customer_general_ledger(name):
+    file = send_report_pdf(name, "G")
+    doc = frappe.get_doc("Customer", name)
+    if doc.mobile_no:
+        if check_whatsapp_api():   
+            whatsapp_no = [doc.mobile_no]
+
+            company = frappe.get_doc("Company", "Vijay Mamra Private Limited")
             for wpn in company.custom_whatsapp_no:
                 if wpn.whatsapp_no and wpn.enable == 1:
                     if wpn.whatsapp_no not in whatsapp_no:
@@ -347,10 +370,15 @@ def get_mobile_numbers(roles):
 
 
 @frappe.whitelist()
-def send_report_pdf(name):
-    from vijay_whatsapp.report import get_report_content
-    pdf_content = get_pdf(get_report_content(name)) 
-    pdf_file_name = f"demo.pdf"
+def send_report_pdf(name, report_name):
+    from vijay_whatsapp.report import get_receivable_report_content, get_general_report_content
+    if report_name == "R":
+        pdf_content = get_pdf(get_receivable_report_content(name)) 
+        pdf_file_name = f"Receivable-{name}.pdf"
+    
+    if report_name == "G":
+        pdf_content = get_pdf(get_general_report_content(name)) 
+        pdf_file_name = f"General Ledger-{name}.pdf"
 
     file = save_file_on_filesystem(pdf_file_name, pdf_content)
 

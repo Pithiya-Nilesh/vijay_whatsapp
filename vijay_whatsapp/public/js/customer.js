@@ -4,7 +4,7 @@ frappe.ui.form.on('Customer', {
             frappe.call({
                 method: 'vijay_whatsapp.api.on_customer_receivable',
                 args:{
-                'doc': frm.doc.name,
+                'name': frm.doc.name,
                 },
                 callback: function(r) {
                     if (!r.exc) {
@@ -22,6 +22,30 @@ frappe.ui.form.on('Customer', {
                 }
             })
         }, ("Whatsapp"))
+        
+        frm.add_custom_button(__('Send General Ledger'), function() {
+            frappe.call({
+                method: 'vijay_whatsapp.api.on_customer_general_ledger',
+                args:{
+                'name': frm.doc.name,
+                },
+                callback: function(r) {
+                    if (!r.exc) {
+                        // Handle success
+                        frappe.msgprint({
+                            title: __('Notification'),
+                            indicator: 'green',
+                            message: __('Whatsapp Message Queue Successfully.')
+                        });
+                        console.log('Message sent successfully.');
+                    } else {
+                        // Handle error
+                        console.log('Error sending message:', r.exc);
+                    }
+                }
+            })
+        }, __("Whatsapp"));
+        
     }
 })
 
