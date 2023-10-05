@@ -68,7 +68,7 @@ def on_sales_invoice(doc, method):
             file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -103,7 +103,7 @@ def on_outstanding_sales_invoice_reminder():
                     file_url = f"{get_url()+file['file_url']}"
 
                     # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-                    enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name']) 
+                    enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Outstanding.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -139,7 +139,7 @@ def on_payment_entry(doc, method):
             file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name']) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -167,7 +167,7 @@ def on_purchase_order(doc, method):
             file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Purchase+Order+is+Created.', file_url=file_url, filename=file['file_name']) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Purchase+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -195,7 +195,7 @@ def on_delivery_note(doc, method):
             file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name']) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 

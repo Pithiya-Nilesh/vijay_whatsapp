@@ -3,25 +3,36 @@ from frappe.utils.data import get_url
 from frappe.email.doctype.auto_email_report.auto_email_report import make_links, update_field_types
 from frappe.utils.data import today
 
+
 @frappe.whitelist(allow_guest=True)
 # def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
 def get_receivable_report_content(name):
-    filters = {'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120', 'party_type': 'Customer', 'party': name}
+    filters = {
+        'company': 'Vijay Mamra Private Limited',
+        'ageing_based_on': 'Due Date',
+        'range1': '30',
+        'range2': '60',
+        'range3': '90',
+        'range4': '120',
+        'party_type': 'Customer',
+        'party': name
+    }
+
     """Returns file in for the report in given format"""
-    
+
     report = frappe.get_doc("Report", "Accounts Receivable")
 
     filters = frappe.parse_json(filters) if filters else {}
 
     columns, data = report.get_data(
-        limit= 100,
-        user= frappe.session.user,
-        filters= filters,
+        limit=100,
+        user=frappe.session.user,
+        filters=filters,
         as_dict=True,
         ignore_prepared_report=True,
         are_default_filters=False,
     )
-   
+
     # add serial numbers
     columns.insert(0, frappe._dict(fieldname="idx", label="", width="30px"))
     for i in range(len(data)):
@@ -33,40 +44,40 @@ def get_receivable_report_content(name):
 
     columns = update_field_types(columns)
 
-    return get_html_table("Accounts Receivable" ,columns, data)
+    return get_html_table("Accounts Receivable", columns, data)
 
 
 @frappe.whitelist(allow_guest=True)
 # def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
 def get_general_report_content(name):
-    from datetime import datetime # from python std library
+    from datetime import datetime  # from python std library
     from frappe.utils import add_to_date
 
     filters = {
-    "company": "Vijay Mamra Private Limited",
-    "from_date": today(),
-    "to_date": add_to_date(datetime.now(), days=10, as_string=True),
-    "party_type": "Customer",
-    "party": f'["{name}"]',
-    "group_by": "Group by Voucher (Consolidated)",
-    "include_dimensions": "1",
-    "include_default_book_entries": "1"
-}
+        "company": "Vijay Mamra Private Limited",
+        "from_date": today(),
+        "to_date": add_to_date(datetime.now(), days=10, as_string=True),
+        "party_type": "Customer",
+        "party": f'["{name}"]',
+        "group_by": "Group by Voucher (Consolidated)",
+        "include_dimensions": "1",
+        "include_default_book_entries": "1"
+    }
     """Returns file in for the report in given format"""
-    
+
     report = frappe.get_doc("Report", "General Ledger")
 
     filters = frappe.parse_json(filters) if filters else {}
 
     columns, data = report.get_data(
-        limit= 100,
-        user= frappe.session.user,
-        filters= filters,
+        limit=100,
+        user=frappe.session.user,
+        filters=filters,
         as_dict=True,
         ignore_prepared_report=True,
         are_default_filters=False,
     )
-   
+
     # add serial numbers
     columns.insert(0, frappe._dict(fieldname="idx", label="", width="30px"))
     for i in range(len(data)):
@@ -78,23 +89,23 @@ def get_general_report_content(name):
 
     columns = update_field_types(columns)
 
-    return get_html_table("General Ledger" ,columns, data)
+    return get_html_table("General Ledger", columns, data)
 
 
 def get_html_table(report_name, columns=None, data=None):
     from datetime import timedelta
     from frappe.utils import (
-	add_to_date,
-	cint,
-	format_time,
-	get_link_to_form,
-	get_url_to_report,
-	global_date_format,
-	now,
-	now_datetime,
-	today,
-	validate_email_address,
-)
+        add_to_date,
+        cint,
+        format_time,
+        get_link_to_form,
+        get_url_to_report,
+        global_date_format,
+        now,
+        now_datetime,
+        today,
+        validate_email_address,
+    )
 
     # print("\n\n column", columns)
     # print("\n\n data", data)
@@ -115,7 +126,6 @@ def get_html_table(report_name, columns=None, data=None):
             "edit_report_settings": get_link_to_form("Auto Email Report", report_name),
         },
     )
-
 
 
 # def get_url_to_report(name, report_type: str | None = None, doctype: str | None = None) -> str:
@@ -158,7 +168,7 @@ def get_html_table(report_name, columns=None, data=None):
 # 		return obj.encode(encoding)
 # 	else:
 # 		return obj
-    
+
 
 # def make_links(columns, data):
 #     for row in data:
