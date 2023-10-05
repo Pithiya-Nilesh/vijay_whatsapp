@@ -1,4 +1,6 @@
 import frappe
+from frappe.core.doctype.access_log.access_log import make_access_log
+from frappe.utils.data import today
 import requests
 from frappe.utils.file_manager import save_file_on_filesystem, delete_file
 from frappe.utils.pdf import get_pdf
@@ -195,7 +197,14 @@ def on_delivery_note(doc, method):
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
             enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name']) 
 
-            
+
+
+@frappe.whitelist()
+def on_customer_receivable(name):
+    file = send_report_pdf(name)
+
+
+
 def send_whatsapp_message(numbers, message, file_url, filename, docname):
     '''
         send whatsapp message with file.
@@ -318,3 +327,24 @@ def get_mobile_numbers(roles):
             if user not in final_list:
                 final_list.append(user)
     return final_list
+
+
+@frappe.whitelist()
+def send_report_pdf(name):
+    from vijay_whatsapp.report import get_report_content
+    pdf_content = get_pdf(get_report_content(name)) 
+    pdf_file_name = f"demo.pdf"
+
+    file = save_file_on_filesystem(pdf_file_name, pdf_content)
+
+    doc = frappe.get_doc({
+        'doctype': 'Sent File',
+        'file_path': file["file_url"],
+        'sent_date': today()
+    })
+    doc.insert(ignore_permissions=True)
+    frappe.db.commit()
+    
+    return file
+
+
