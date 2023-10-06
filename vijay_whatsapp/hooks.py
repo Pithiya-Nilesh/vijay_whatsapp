@@ -51,13 +51,13 @@ fixtures = [
             ]
         ]
     ]},
-     {"dt":"Property Setter","filters":[
-        [
-            "module","in",[
-               "Vijay Whatsapp"
-            ]
-        ]
-    ]},
+    #  {"dt":"Property Setter","filters":[
+    #     [
+    #         "module","in",[
+    #            "Vijay Whatsapp"
+    #         ]
+    #     ]
+    # ]},
 ]
 
 
