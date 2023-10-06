@@ -16,10 +16,10 @@ def get_receivable_report_content(name):
 
     report = frappe.get_doc("Report", "Accounts Receivable")
 
-    # filters = frappe.parse_json(filters) if filters else {}
+    filters = frappe.parse_json(filters) if filters else {}
     # filters = frappe.as_json(filters)
 
-    filters = json.loads(filters)
+    # filters = json.loads(filters)
 
     columns, data = report.get_data(
         limit=100,
