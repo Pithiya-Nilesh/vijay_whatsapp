@@ -8,7 +8,9 @@ import json
 @frappe.whitelist(allow_guest=True)
 # def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
 def get_receivable_report_content(name):
-    filters = "{'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120', 'party_type': 'Customer','party': f'[{name}]'}"
+    # filters = "{'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120', 'party_type': 'Customer','party': f'[{name}]'}"
+
+    filters = {'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120', 'party_type': 'Customer','party': f'["name"]'}
 
     """Returns file in for the report in given format"""
 
