@@ -16,7 +16,7 @@ def get_receivable_report_content(name):
         'range3': '90',
         'range4': '120',
         'party_type': 'Customer',
-        'party': name
+        'party': f'["{name}"]'
     }
 
     """Returns file in for the report in given format"""
