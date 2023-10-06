@@ -2,6 +2,7 @@ import frappe
 from frappe.utils.data import get_url
 from frappe.email.doctype.auto_email_report.auto_email_report import make_links, update_field_types
 from frappe.utils.data import today
+import json
 
 
 @frappe.whitelist(allow_guest=True)
@@ -23,7 +24,9 @@ def get_receivable_report_content(name):
     report = frappe.get_doc("Report", "Accounts Receivable")
 
     # filters = frappe.parse_json(filters) if filters else {}
-    filters = frappe.as_json(filters)
+    # filters = frappe.as_json(filters)
+
+    filters = json.loads(filters)
 
     columns, data = report.get_data(
         limit=100,
