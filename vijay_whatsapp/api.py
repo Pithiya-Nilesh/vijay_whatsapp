@@ -18,7 +18,7 @@ def on_sales_order(doc, method):
         doc = frappe.get_doc("Sales Order", doc)
     if doc.contact_mobile and doc.custom_send_whatsapp_message:
         if check_whatsapp_api():   
-            file = create_and_store_file(doc)
+            # file = create_and_store_file(doc)
             # file_url = frappe.utils.get_url()+file["file_url"]
 
             # '8238875334'
@@ -33,11 +33,15 @@ def on_sales_order(doc, method):
                     if wpn.whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(wpn.whatsapp_no)
 
-            file_url = f"{get_url()+file['file_url']}"
+            message = 'Your+Sales+Order+is+Created.'
+
+            enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
+
+            # file_url = f"{get_url()+file['file_url']}"
             # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
             # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
@@ -50,7 +54,7 @@ def on_sales_invoice(doc, method):
         doc = frappe.get_doc("Sales Invoice", doc)
     if doc.contact_mobile and doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            file = create_and_store_file(doc)
+            # file = create_and_store_file(doc)
             # file_url = frappe.utils.get_url()+file["file_url"]
 
             # '8238875334'
@@ -65,10 +69,14 @@ def on_sales_invoice(doc, method):
                 if wpn.whatsapp_no and wpn.enable == 1:
                     whatsapp_no.append(wpn.whatsapp_no)
 
-            file_url = f"{get_url()+file['file_url']}"
+            message = 'Your+Sales+Invoice+is+Created.'
+
+            enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
+
+            # file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Sales+Invoice+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -115,7 +123,7 @@ def on_payment_entry(doc, method):
         doc = frappe.get_doc("Payment Entry", doc)
     if doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            file = create_and_store_file(doc)
+            # file = create_and_store_file(doc)
 
             whatsapp_no = []
             for payment_team in doc.custom_whatsapp_no:
@@ -136,10 +144,11 @@ def on_payment_entry(doc, method):
             if doc.payment_type == 'Internal Transfer':
                 message = f'Internal Payment Entry From {doc.paid_from} To {doc.paid_to}.'
 
-            file_url = f"{get_url()+file['file_url']}"
+            enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
+            # file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -151,7 +160,7 @@ def on_purchase_order(doc, method):
         doc = frappe.get_doc("Purchase Order", doc)
     if doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            file = create_and_store_file(doc)
+            # file = create_and_store_file(doc)
 
             whatsapp_no = []
             for purchase_team in doc.custom_whatsapp_no:
@@ -164,10 +173,14 @@ def on_purchase_order(doc, method):
                     if wpn.whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(wpn.whatsapp_no)
 
-            file_url = f"{get_url()+file['file_url']}"
+            message = 'Your+Purchase+Order+is+Created.'
+
+            enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
+
+            # file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Purchase+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+Purchase+Order+is+Created.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 @frappe.whitelist()
@@ -179,7 +192,7 @@ def on_delivery_note(doc, method):
         doc = frappe.get_doc("Delivery Note", doc)
     if doc.custom_send_whatsapp_message:
         if check_whatsapp_api():
-            file = create_and_store_file(doc)
+            # file = create_and_store_file(doc)
 
             whatsapp_no = [doc.contact_mobile]
             for delivery_team in doc.custom_whatsapp_no:
@@ -192,10 +205,14 @@ def on_delivery_note(doc, method):
                     if wpn.whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(wpn.whatsapp_no)
 
-            file_url = f"{get_url()+file['file_url']}"
+            message = 'Your+order+has+been+dispatched.'
+
+            enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
+
+            # file_url = f"{get_url()+file['file_url']}"
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            # enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your+order+has+been+dispatched.', file_url=file_url, filename=file['file_name'], docname=doc.name) 
 
 
 
@@ -217,7 +234,7 @@ def on_customer_receivable(name):
             # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name, doctype=doc.doctype) 
             # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
@@ -240,12 +257,12 @@ def on_customer_general_ledger(name):
             # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
 
             # send_whatsapp_message(whatsapp_no, 'Your+Sales+Order+is+Created.', frappe.utils.get_url()+file["file_url"], file["file_name"])
-            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name) 
+            enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message='Your OutStanding Invoice Details', file_url=file_url, filename=file['file_name'], docname=doc.name, doctype=doc.doctype) 
             # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
 
-def send_whatsapp_message(numbers, message, file_url, filename, docname):
+def send_whatsapp_message(numbers, message, file_url, filename, docname, doctype):
     '''
         send whatsapp message with file.
     '''
@@ -258,10 +275,17 @@ def send_whatsapp_message(numbers, message, file_url, filename, docname):
         
         # print("\n\n url", url, "\n\n")
         response = requests.get(url)
+        owner = frappe.session.user
+        data = json.loads(response.text)
+        
+        if "status" in data and data["status"] == "success":
+            enqueue('vijay_whatsapp.api.set_comment', doctype=doctype, docname=docname, owner=owner, content="<div class='card'><b style='color: green' class='px-2 pt-2'>Whatsapp Message Sent: </b> <span class='px-2 pb-2'>Your whatsapp message send successfully.</span></div>")
+        else:
+            enqueue('vijay_whatsapp.api.set_comment', doctype=doctype, docname=docname, owner=owner, content=f"<div class='card'><b style='color: red' class='px-2 pt-2'>Whatsapp Message Not Sent: </b> <span class='px-2 pb-2'>{response.text}</span></div>")
 
-        enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=docname, whatsapp_no=number, response=json.loads(response.text))
+        enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype=doctype, docname=docname, whatsapp_no=number, response=json.loads(response.text))
 
-        # return response
+        return response
 
 
 def get_whatsapp_credentials():
@@ -299,7 +323,7 @@ def check_scheduler_is_enable():
         return True
 
 
-def create_and_store_file(doc):
+def create_and_store_file(doc, whatsapp_no, message):
     '''
         get doctype html and convert to pdf and store in public file and store path in sent file doctype.
     '''
@@ -311,15 +335,18 @@ def create_and_store_file(doc):
 
     file = save_file_on_filesystem(pdf_file_name, pdf_content)
 
-    doc = frappe.get_doc({
+    sent_file = frappe.get_doc({
         'doctype': 'Sent File',
         'file_path': file["file_url"],
         'sent_date': today()
     })
-    doc.insert(ignore_permissions=True)
+    sent_file.insert(ignore_permissions=True)
     frappe.db.commit()
     
-    return file
+    # return file
+    file_url = f"{get_url()+file['file_url']}"
+    enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name'], docname=doc.name, doctype=doc.doctype)
+
 
 
 @frappe.whitelist(allow_guest=True)
@@ -334,6 +361,18 @@ def set_whatsapp_log(doctype, docname, whatsapp_no, response):
     doc.whatsapp_no = whatsapp_no
     doc.response = json.dumps(response, indent=4)
     doc.insert()
+    frappe.db.commit()
+
+def set_comment(doctype, docname, owner, content):
+    activity = frappe.get_doc(
+        {"doctype": "Comment", "comment_type": "Info",
+         "reference_doctype": doctype, "reference_name": docname,
+         "content": content})
+    activity.insert(ignore_permissions=True)
+    frappe.db.commit()
+
+    comment = frappe.get_last_doc('Comment')
+    frappe.db.set_value('Comment', f'{comment.name}', {"owner": owner})
     frappe.db.commit()
 
 
@@ -391,3 +430,40 @@ def send_report_pdf(name, report_name):
     frappe.db.commit()
     
     return file
+
+
+
+@frappe.whitelist(allow_guest=True)
+def check(numbers='', message='', file_url=''):
+    # '''
+    #     send whatsapp message with file.
+    # '''
+    # file_url = 'https://vijaymamra.frappe.cloud/files/Payment%20Entry-ACC-PAY-2023-00002.pdf'
+    # message = 'asdf'
+
+    # url, instance_id, access_token = get_whatsapp_credentials()
+    # # print("in send whatsapp message")
+    # number = 7990915950
+    # # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
+    # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"
+    
+    # # print("\n\n url", url, "\n\n")
+    # response = requests.get(url)
+    # print("\n\n response", response.text)
+    # print("\n\n type response", type(response.text))
+
+    # data = frappe.as_json(response.text)
+
+    data = {'message': {'key': {'remoteJid': '917990915950@c.us', 'fromMe': True, 'id': 'BAE51B3047BA6F4C'}, 'message': {'documentMessage': {'url': 'https://mmg.whatsapp.net/v/t62.7119-24/40116021_1273910713269040_1288344065129231328_n.enc?ccb=11-4&oh=01_AdS2Te3IYQyScs-n1wO7_7v1EVak0e0Mp-Lh9UYPlIeypg&oe=65470DFA&_nc_sid=000000&mms3=true', 'mimetype': 'application/pdf', 'fileSha256': 'FHjwuF3x9HAqsbTACcfze2CgXvbxceiNZOOta/7Z4Kg=', 'fileLength': '24838', 'mediaKey': '6lOdvTjXuwTCLYNKdWm9YMTozmD/HN4x+6rJ9gQqBJo=', 'fileName': 'Payment Entry-ACC-PAY-2023-00002.pdf', 'fileEncSha256': 'yoTZI27Oi5x81EmIVymkAbuqaJlBQcGZmy86bysvy6E=', 'directPath': '/v/t62.7119-24/40116021_1273910713269040_1288344065129231328_n.enc?ccb=11-4&oh=01_AdS2Te3IYQyScs-n1wO7_7v1EVak0e0Mp-Lh9UYPlIeypg&oe=65470DFA&_nc_sid=000000', 'mediaKeyTimestamp': '1696569769', 'caption': 'asdf'}}, 'messageTimestamp': '1696569769'}}
+
+    # data = json.loads(response)
+
+
+    # Assuming data is a dictionary or JSON object
+    if "status" in data and data["status"] == "success":
+        # Code to run if "status" is "success"
+        print("Status is success.")
+    else:
+        # Code to run if "status" is not "success" or the key is not present
+        print("Status is not success.")
+

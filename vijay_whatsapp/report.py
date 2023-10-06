@@ -22,7 +22,8 @@ def get_receivable_report_content(name):
 
     report = frappe.get_doc("Report", "Accounts Receivable")
 
-    filters = frappe.parse_json(filters) if filters else {}
+    # filters = frappe.parse_json(filters) if filters else {}
+    filters = frappe.as_json(filters)
 
     columns, data = report.get_data(
         limit=100,
@@ -47,6 +48,8 @@ def get_receivable_report_content(name):
     return get_html_table("Accounts Receivable", columns, data)
 
 
+
+
 @frappe.whitelist(allow_guest=True)
 # def get_report_content(report="", report_type='', filters={'company': 'Vijay Mamra Private Limited', 'ageing_based_on': 'Due Date', 'range1': '30', 'range2': '60', 'range3': '90', 'range4': '120'}, data_modified_till=""):
 def get_general_report_content(name):
@@ -55,19 +58,22 @@ def get_general_report_content(name):
 
     filters = {
         "company": "Vijay Mamra Private Limited",
-        "from_date": today(),
-        "to_date": add_to_date(datetime.now(), days=10, as_string=True),
+        "from_date": add_to_date(datetime.now(), days=-30, as_string=True),
+        "to_date": today(),
         "party_type": "Customer",
         "party": f'["{name}"]',
         "group_by": "Group by Voucher (Consolidated)",
         "include_dimensions": "1",
         "include_default_book_entries": "1"
     }
+
     """Returns file in for the report in given format"""
 
     report = frappe.get_doc("Report", "General Ledger")
 
     filters = frappe.parse_json(filters) if filters else {}
+
+    # filters = frappe.json(filters)
 
     columns, data = report.get_data(
         limit=100,
@@ -77,6 +83,9 @@ def get_general_report_content(name):
         ignore_prepared_report=True,
         are_default_filters=False,
     )
+
+    print("\n\n column", columns)
+    print("\n\n data", data)
 
     # add serial numbers
     columns.insert(0, frappe._dict(fieldname="idx", label="", width="30px"))
