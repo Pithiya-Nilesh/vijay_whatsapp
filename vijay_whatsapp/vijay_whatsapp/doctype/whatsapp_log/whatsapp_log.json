@@ -9,6 +9,7 @@
  "field_order": [
   "w_doctype",
   "w_docname",
+  "status",
   "whatsapp_no",
   "time",
   "response"
@@ -47,11 +48,17 @@
    "fieldtype": "Datetime",
    "label": "time",
    "read_only": 1
+  },
+  {
+   "fieldname": "status",
+   "fieldtype": "Select",
+   "label": "Status",
+   "options": "\nSent\nFailed"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2023-10-02 18:18:47.890276",
+ "modified": "2023-10-06 13:17:08.114315",
  "modified_by": "Administrator",
  "module": "Vijay Whatsapp",
  "name": "Whatsapp Log",
@@ -72,5 +79,14 @@
  ],
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [
+  {
+   "color": "Green",
+   "title": "Sent"
+  },
+  {
+   "color": "Red",
+   "title": "Failed"
+  }
+ ]
 }

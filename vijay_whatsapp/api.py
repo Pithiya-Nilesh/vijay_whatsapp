@@ -238,7 +238,6 @@ def on_customer_receivable(name):
             # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
-
 @frappe.whitelist()
 def on_customer_general_ledger(name):
     file = send_report_pdf(name, "G")
@@ -261,7 +260,6 @@ def on_customer_general_ledger(name):
             # enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype="Sales Order", docname=doc.name, whatsapp_no=whatsapp_no, response=response)
 
 
-
 def send_whatsapp_message(numbers, message, file_url, filename, docname, doctype):
     '''
         send whatsapp message with file.
@@ -280,10 +278,10 @@ def send_whatsapp_message(numbers, message, file_url, filename, docname, doctype
         
         if "status" in data and data["status"] == "success":
             enqueue('vijay_whatsapp.api.set_comment', doctype=doctype, docname=docname, owner=owner, content="<div class='card'><b style='color: green' class='px-2 pt-2'>Whatsapp Message Sent: </b> <span class='px-2 pb-2'>Your whatsapp message send successfully.</span></div>")
+            enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype=doctype, docname=docname, whatsapp_no=number, response=json.loads(response.text), status="Sent")
         else:
             enqueue('vijay_whatsapp.api.set_comment', doctype=doctype, docname=docname, owner=owner, content=f"<div class='card'><b style='color: red' class='px-2 pt-2'>Whatsapp Message Not Sent: </b> <span class='px-2 pb-2'>{response.text}</span></div>")
-
-        enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype=doctype, docname=docname, whatsapp_no=number, response=json.loads(response.text))
+            enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype=doctype, docname=docname, whatsapp_no=number, response=json.loads(response.text), status="Failed")
 
         return response
 
@@ -348,9 +346,8 @@ def create_and_store_file(doc, whatsapp_no, message):
     enqueue('vijay_whatsapp.api.send_whatsapp_message', numbers=whatsapp_no, message=message, file_url=file_url, filename=file['file_name'], docname=doc.name, doctype=doc.doctype)
 
 
-
 @frappe.whitelist(allow_guest=True)
-def set_whatsapp_log(doctype, docname, whatsapp_no, response):
+def set_whatsapp_log(doctype, docname, whatsapp_no, response, status):
     '''
         set whatsapp log after message send
     '''
@@ -359,9 +356,11 @@ def set_whatsapp_log(doctype, docname, whatsapp_no, response):
     doc.w_doctype = doctype
     doc.w_docname = docname
     doc.whatsapp_no = whatsapp_no
+    doc.status = status
     doc.response = json.dumps(response, indent=4)
     doc.insert()
     frappe.db.commit()
+
 
 def set_comment(doctype, docname, owner, content):
     activity = frappe.get_doc(
@@ -430,7 +429,6 @@ def send_report_pdf(name, report_name):
     frappe.db.commit()
     
     return file
-
 
 
 @frappe.whitelist(allow_guest=True)
