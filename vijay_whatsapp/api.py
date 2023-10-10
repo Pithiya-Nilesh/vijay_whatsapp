@@ -33,8 +33,12 @@ def on_sales_order(doc, method):
                     if wpn.whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(wpn.whatsapp_no)
 
-            message = 'Your+Sales+Order+is+Created.'
+            # find_link = frappe.db.get_value("Dynamic Link", filters={"link_name": company.name}, fieldname=["parent"])
+            # address = frappe.db.get_value("Address", find_link, fieldname=['*'], as_dict=True)
 
+
+            # message = f"Your+Sales+Order+is+Created for {company.name}. address:- {address['address_line1'], address['address_line2'] - address['pincode'], address['city'], address['state'], address['county'], address['email_id'], address['email_id'], address['phone']}"
+            message = "Your+Sales+Order+is+Created"
             enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
 
             # file_url = f"{get_url()+file['file_url']}"

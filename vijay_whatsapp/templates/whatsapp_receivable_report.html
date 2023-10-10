@@ -1,0 +1,162 @@
+<!-- {% macro get_alignment(col) %}
+{%- if col.fieldtype in ('Int', 'Float', 'Currency', 'Check') %} class="text-right" {% endif -%}
+{% endmacro %}
+{% if columns %}
+	{% set max_width = '100%' if columns|length > 3 else '600px' %}
+{% else %}
+	{% set max_width = '600px' %}
+{% endif %}
+<table class="report-title" border="2" cellpadding="0" cellspacing="0" width="100%" style="max-width: {{ max_width }}">
+	<tr>
+		<td>
+			<b>{{ title }}</b>
+		</td>
+	</tr>
+	{% if description %}
+	<tr>
+		<td>{{ description }}</td>
+	</tr>
+	{% endif %}
+</table>
+{% if data %}
+<table class="table table-bordered text-medium" cellpadding="0" cellspacing="0" border="2" style="max-width: {{ max_width }}">
+	<thead>
+		<tr>
+			{% for col in columns %}
+			<th {{- get_alignment(col) }}>
+				{{- _(col.label) -}}
+			</th>
+			{% endfor %}
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in data %}
+		<tr>
+			{% for col in columns %}
+				{% if row[col.fieldname] == 'Total' %}
+					<td {{- get_alignment(col) }}>
+						{{- row[col.fieldname] -}}
+					</td>
+				{% else %}
+					<td {{- get_alignment(col) }}>
+						{{- frappe.format(row[col.fieldname], col, row) -}}
+					</td>
+				{% endif %}
+			{% endfor %}
+		</td>
+		{% endfor %}
+	</tbody>
+</table>
+{% endif %}
+
+{% if not frappe.db.get_value("System Settings", "System Settings", "hide_footer_in_auto_email_reports")|int %}
+<table class="more-info" border="2" cellpadding="0" cellspacing="0" width="100%" style="max-width: {{ max_width }}">
+	<tr>
+		<td>
+			<p>
+				{{ _("This report was generated on {0}").format(date_time) }}
+			</p>
+		</td>
+	</tr>
+</table>
+{% endif %} -->
+
+{% macro get_alignment(col) %}
+{%- if col.fieldtype in ('Int', 'Float', 'Currency', 'Check') %} class="text-right" {% endif -%}
+{% endmacro %}
+{% if columns %}
+	{% set max_width = '100%' if columns|length > 3 else '600px' %}
+{% else %}
+	{% set max_width = '600px' %}
+{% endif %}
+
+
+{% if title %}
+<h2 style="text-align: center;">{{ title }}</h2>
+{% endif %}
+
+<!-- {% if description %}
+<p style="text-align: center; margin-top: -10; margin-bottom: 2rem;  font-weight: normal;">{{ description }}</p>
+{% endif %} -->
+
+{% if data %}
+	<table class="table table-bordered text-medium" cellpadding="0" cellspacing="0" border="1" style="font-size: 0.90rem; border-top: none; border-bottom: none; max-width: {{ max_width }} ">
+		<thead>
+			<tr style="color: #74808b;">
+				<th {{- get_alignment(columns[1]) }} style="width: 6rem; text-align: left; padding: 5px;">
+					Date
+				</th>
+				<th {{- get_alignment(columns[15]) }} style="text-align: left; padding: 5px;">
+					Age
+				</th>
+				<th {{- get_alignment(columns[8]) }} style=" text-align: left; padding: 5px;">
+					Reference
+				</th>
+				<th {{- get_alignment(columns[3]) }} style=" text-align: left; padding: 5px;">
+					{{- _(columns[3].label) -}}
+				</th>
+				<th {{- get_alignment(columns[11]) }} style="width: 4rem; text-align: left; padding: 5px;">
+					{{- _(columns[11].label) -}}
+				</th>
+				<th {{- get_alignment(columns[12]) }} style="text-align: left; padding: 5px;">
+					{{- _(columns[12].label) -}}
+				</th>
+				<th {{- get_alignment(columns[13]) }} style="text-align: left; padding: 5px;">
+					{{- _(columns[13].label) -}}
+				</th>
+				<th {{- get_alignment(columns[14]) }} style="width: 4rem; text-align: left; padding: 5px;">
+					{{- _(columns[14].label) -}}
+				</th>
+			</tr>
+		</thead>
+		<tbody style="text-align: right;">
+			
+			{% for row in data %}
+			<tr >
+				<td {{- get_alignment(columns[1]) }} style="text-align: left; padding: 5px;">
+					{{- frappe.format(row[columns[1].fieldname], columns[1], row) -}}
+				</td>
+				<td {{- get_alignment(columns[15]) }} style="padding: 5px;">
+					{% if not loop.last %}
+						{{- frappe.format(row[columns[15].fieldname], columns[15], row) -}}
+					{% endif %}
+				</td>				
+				<td {{- get_alignment(columns[8]) }} style="text-align: left; padding: 5px;">
+					{{- frappe.format(row[columns[8].fieldname], columns[8], row) -}}<br>
+					{{- frappe.format(row[columns[9].fieldname], columns[9], row) -}}
+				</td>
+				<td {{- get_alignment(columns[3]) }} style="text-align: left; padding: 5px;">
+					{% if loop.last %}
+					<span style="float: right;"><b>Total</b></span> {{- frappe.format(row[columns[3].fieldname], columns[3], row) -}}
+					{% else %}
+						{{- frappe.format(row[columns[3].fieldname], columns[3], row) -}}<br>
+						{{- frappe.format(row[columns[6].fieldname], columns[6], row) -}}<br>
+						{% set file_name = 'remarks' %}
+						Remarks: {{- frappe.format(row[file_name], columns[2], row) -}}
+					{% endif %}
+				</td>	
+																		
+				<td {{- get_alignment(columns[11]) }} style="padding: 5px;">
+					{{- frappe.format(row[columns[11].fieldname], columns[11], row) -}}
+				</td>
+				<td {{- get_alignment(columns[12]) }} style="padding: 5px;">
+					{{- frappe.format(row[columns[12].fieldname], columns[12], row) -}}
+				</td>
+				<td {{- get_alignment(columns[13]) }} style="padding: 5px;">
+					{{- frappe.format(row[columns[13].fieldname], columns[13], row) -}}
+				</td>
+				<td {{- get_alignment(columns[14]) }} style="padding: 5px;">
+					{{- frappe.format(row[columns[14].fieldname], columns[14], row) -}}
+				</td>
+			</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	{% endif %}
+
+
+
+{% if not frappe.db.get_value("System Settings", "System Settings", "hide_footer_in_auto_email_reports")|int %}
+<p style="text-align: right; margin-top: 2rem; font-weight: normal; color: #74808b; font-size: small;">{{ _("This report was generated on {0}").format(date_time) }}</p>
+<!-- <p style="text-align: right; margin-top: 0.5rem; font-weight: normal; color: #74808b; font-size: small;">{{ _("View report in your browser 1") }}:<a href= {{report_url}} target="_blank">{{report_name}}</a></p> -->
+{% endif %}

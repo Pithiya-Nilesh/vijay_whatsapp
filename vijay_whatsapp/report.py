@@ -80,9 +80,6 @@ def get_general_report_content(name):
         are_default_filters=False,
     )
 
-    print("\n\n column", columns)
-    print("\n\n data", data)
-
     # add serial numbers
     columns.insert(0, frappe._dict(fieldname="idx", label="", width="30px"))
     for i in range(len(data)):
@@ -117,9 +114,16 @@ def get_html_table(report_name, columns=None, data=None):
     date_time = global_date_format(now()) + " " + format_time(now())
     report_doctype = frappe.db.get_value("Report", report_name, "ref_doctype")
 
+    if report_name == "Accounts Receivable":
+        template = "vijay_whatsapp/templates/whatsapp_general_report.html"
+    elif report_name == "General Ledger":
+        template = "vijay_whatsapp/templates/whatsapp_receivable_report.html"
+    else:
+        template = "frappe/templates/emails/auto_email_report.html"
+
     return frappe.render_template(
         # "frappe/templates/emails/auto_email_report.html",
-        "vijay_whatsapp/templates/whatsapp_report.html",
+        template,
         {
             "title": report_name,
             "description": "this is description",
