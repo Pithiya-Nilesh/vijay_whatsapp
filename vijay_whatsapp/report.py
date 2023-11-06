@@ -115,9 +115,9 @@ def get_html_table(report_name, columns=None, data=None):
     report_doctype = frappe.db.get_value("Report", report_name, "ref_doctype")
 
     if report_name == "Accounts Receivable":
-        template = "vijay_whatsapp/templates/whatsapp_general_report.html"
-    elif report_name == "General Ledger":
         template = "vijay_whatsapp/templates/whatsapp_receivable_report.html"
+    elif report_name == "General Ledger":
+        template = "vijay_whatsapp/templates/whatsapp_general_report.html"
     else:
         template = "frappe/templates/emails/auto_email_report.html"
 
