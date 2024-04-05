@@ -22,7 +22,7 @@ def on_sales_order(doc, method):
             # file_url = frappe.utils.get_url()+file["file_url"]
 
             # '8238875334'
-            whatsapp_no = [doc.contact_mobile]
+            whatsapp_no = [doc.contact_mobile]            
             for sales_team in doc.sales_team:
                 if sales_team.custom_whatsapp_no:
                     whatsapp_no.append(sales_team.custom_whatsapp_no)
@@ -331,7 +331,10 @@ def create_and_store_file(doc, whatsapp_no, message):
     '''
     from frappe.utils import today
 
-    html_content = frappe.get_print(doc.doctype, doc.name)
+    if doc.doctype == "Sales Order":
+        html_content = frappe.get_print(doc.doctype, doc.name, 'Sales Order Print Designer' )
+    elif doc.doctype == "Sales Invoice":
+        html_content = frappe.get_print(doc.doctype, doc.name, 'New Invoice' )
     pdf_content = get_pdf(html_content) 
     pdf_file_name = f"{doc.doctype}-{doc.name}.pdf"
 
