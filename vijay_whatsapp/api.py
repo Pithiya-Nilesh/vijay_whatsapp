@@ -10,22 +10,26 @@ import json
 from frappe import enqueue
 
 @frappe.whitelist()
-def on_sales_order(doc, method):
+def on_sales_order(doc, method):    
     '''
         for send whatsapp notification map whatsapp number and create file on sales order doctype
     '''
     if method == 'whitelist':
         doc = frappe.get_doc("Sales Order", doc)
     if doc.contact_mobile and doc.custom_send_whatsapp_message:
-        if check_whatsapp_api():   
+        if check_whatsapp_api():  
             # file = create_and_store_file(doc)
             # file_url = frappe.utils.get_url()+file["file_url"]
 
-            # '8238875334'
             whatsapp_no = [doc.contact_mobile]            
             for sales_team in doc.sales_team:
                 if sales_team.custom_whatsapp_no:
                     whatsapp_no.append(sales_team.custom_whatsapp_no)
+
+            sp_doc_name = frappe.db.sql(" select parent from `tabDynamic Link` where link_name=%s ", (doc.sales_partner), as_dict=True)
+            sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
+
+            whatsapp_no.append(sp_number[0]['phone'])
 
             company = frappe.get_doc("Company", doc.company)
             for wpn in company.custom_whatsapp_no:
@@ -36,7 +40,7 @@ def on_sales_order(doc, method):
             # find_link = frappe.db.get_value("Dynamic Link", filters={"link_name": company.name}, fieldname=["parent"])
             # address = frappe.db.get_value("Address", find_link, fieldname=['*'], as_dict=True)
 
-
+            print("\n\n\n", whatsapp_no)
             # message = f"Your+Sales+Order+is+Created for {company.name}. address:- {address['address_line1'], address['address_line2'] - address['pincode'], address['city'], address['state'], address['county'], address['email_id'], address['email_id'], address['phone']}"
             message = "Your+Sales+Order+is+Created"
             enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
