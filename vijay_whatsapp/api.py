@@ -29,7 +29,8 @@ def on_sales_order(doc, method):
             sp_doc_name = frappe.db.sql(" select parent from `tabDynamic Link` where link_name=%s ", (doc.sales_partner), as_dict=True)
             sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
 
-            whatsapp_no.append(sp_number[0]['phone'])
+            if sp_number:
+                whatsapp_no.append(sp_number[0]['phone'])
 
             company = frappe.get_doc("Company", doc.company)
             for wpn in company.custom_whatsapp_no:
@@ -40,7 +41,7 @@ def on_sales_order(doc, method):
             # find_link = frappe.db.get_value("Dynamic Link", filters={"link_name": company.name}, fieldname=["parent"])
             # address = frappe.db.get_value("Address", find_link, fieldname=['*'], as_dict=True)
 
-            print("\n\n\n", whatsapp_no)
+            
             # message = f"Your+Sales+Order+is+Created for {company.name}. address:- {address['address_line1'], address['address_line2'] - address['pincode'], address['city'], address['state'], address['county'], address['email_id'], address['email_id'], address['phone']}"
             message = "Your+Sales+Order+is+Created"
             enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
@@ -55,6 +56,7 @@ def on_sales_order(doc, method):
 
 @frappe.whitelist()
 def on_sales_invoice(doc, method):
+    print("this calllllll")
     '''
         for send whatsapp notification map whatsapp number and create file on sales invoice doctype
     '''
@@ -65,18 +67,23 @@ def on_sales_invoice(doc, method):
             # file = create_and_store_file(doc)
             # file_url = frappe.utils.get_url()+file["file_url"]
 
-            # '8238875334'
+            sp_doc_name = frappe.db.sql(" select parent from `tabDynamic Link` where link_name=%s ", (doc.sales_partner), as_dict=True)
+            sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
+
             whatsapp_no = [doc.contact_mobile]
             for sales_team in doc.sales_team:
                 if sales_team.custom_whatsapp_no:
                     if sales_team.custom_whatsapp_no not in whatsapp_no:
                         whatsapp_no.append(sales_team.custom_whatsapp_no)
 
+            if sp_number:
+                whatsapp_no.append(sp_number[0]['phone'])
+
             company = frappe.get_doc("Company", doc.company)
             for wpn in company.custom_whatsapp_no:
                 if wpn.whatsapp_no and wpn.enable == 1:
                     whatsapp_no.append(wpn.whatsapp_no)
-
+            
             message = 'Your+Sales+Invoice+is+Created.'
 
             enqueue('vijay_whatsapp.api.create_and_store_file', doc=doc, whatsapp_no=whatsapp_no, message=message)
@@ -276,6 +283,7 @@ def send_whatsapp_message(numbers, message, file_url, filename, docname, doctype
     url, instance_id, access_token = get_whatsapp_credentials()
     # print("in send whatsapp message")
     for number in numbers:
+
         # url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=text&message={message}&instance_id={instance_id}&access_token={access_token}"
         url = f"https://x3.woonotif.com/api/send.php?number=91{number}&type=media&message={message}&media_url={file_url}&instance_id={instance_id}&access_token={access_token}"
         
@@ -291,7 +299,7 @@ def send_whatsapp_message(numbers, message, file_url, filename, docname, doctype
             enqueue('vijay_whatsapp.api.set_comment', doctype=doctype, docname=docname, owner=owner, content=f"<div class='card'><b style='color: red' class='px-2 pt-2'>Whatsapp Message Not Sent: </b> <span class='px-2 pb-2'>{response.text}</span></div>")
             enqueue("vijay_whatsapp.api.set_whatsapp_log", doctype=doctype, docname=docname, whatsapp_no=number, response=json.loads(response.text), status="Failed")
 
-        return response
+    return response
 
 
 def get_whatsapp_credentials():
@@ -336,7 +344,7 @@ def create_and_store_file(doc, whatsapp_no, message):
     from frappe.utils import today
 
     if doc.doctype == "Sales Order":
-        html_content = frappe.get_print(doc.doctype, doc.name, 'Sales Order Print Designer' )
+        html_content = frappe.get_print(doc.doctype, doc.name, 'Sales Order Print Designer')
     elif doc.doctype == "Sales Invoice":
         html_content = frappe.get_print(doc.doctype, doc.name, 'New Invoice' )
     pdf_content = get_pdf(html_content) 
