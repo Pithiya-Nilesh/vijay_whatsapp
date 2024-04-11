@@ -27,7 +27,8 @@ def on_sales_order(doc, method):
                     whatsapp_no.append(sales_team.custom_whatsapp_no)
 
             sp_doc_name = frappe.db.sql(" select parent from `tabDynamic Link` where link_name=%s ", (doc.sales_partner), as_dict=True)
-            sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
+            if sp_doc_name:
+                sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
 
             if sp_number:
                 whatsapp_no.append(sp_number[0]['phone'])
@@ -68,7 +69,8 @@ def on_sales_invoice(doc, method):
             # file_url = frappe.utils.get_url()+file["file_url"]
 
             sp_doc_name = frappe.db.sql(" select parent from `tabDynamic Link` where link_name=%s ", (doc.sales_partner), as_dict=True)
-            sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
+            if sp_doc_name:
+                sp_number = frappe.db.sql(" select phone from `tabContact` where name=%s ", (sp_doc_name[0]['parent']), as_dict=True)
 
             whatsapp_no = [doc.contact_mobile]
             for sales_team in doc.sales_team:
