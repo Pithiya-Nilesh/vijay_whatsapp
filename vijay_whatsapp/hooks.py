@@ -146,10 +146,10 @@ fixtures = [
 # Hook on document methods and events
 
 doc_events = {
-	"Sales Order": {
-        "on_submit": "vijay_whatsapp.api.on_sales_order",
-        # "on_update": "vijay_whatsapp.api.on_sales_order"
-	},
+	# "Sales Order": {
+    #     "on_submit": "vijay_whatsapp.api.on_sales_order",
+    #     # "on_update": "vijay_whatsapp.api.on_sales_order"
+	# },
     "Sales Invoice": {
         "on_submit": "vijay_whatsapp.api.on_sales_invoice"
 	},
