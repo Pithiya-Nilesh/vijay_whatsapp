@@ -17,6 +17,9 @@ frappe.ui.form.on('Sales Invoice', {
                             method: 'vijay_whatsapp.api.on_sales_invoice',
                             args:{
                             'doc': frm.doc.name,
+                            'customer_name':frm.doc.customer_name,
+                            'truck_no':frm.doc.custom_truck_no,
+                            'driver_mobile_no':frm.doc.custom_driver_mobile_no,
                             'method': 'whitelist'
                             },
                             callback: function(r) {
