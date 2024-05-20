@@ -11,7 +11,7 @@ from frappe import enqueue
 
 
 @frappe.whitelist()
-def on_sales_order(doc, customer_name, method):
+def on_sales_order(doc, method):
     """
     for send whatsapp notification map whatsapp number and create file on sales order doctype
     """
@@ -53,7 +53,7 @@ def on_sales_order(doc, customer_name, method):
 
             # message = f"Your+Sales+Order+is+Created for {company.name}. address:- {address['address_line1'], address['address_line2'] - address['pincode'], address['city'], address['state'], address['county'], address['email_id'], address['email_id'], address['phone']}"
             # message = "Your+Sales+Order+is+Created"
-             # Prepare the message
+            # Prepare the message
             message_template = """Dear Sir,\n
                                 {customer_name}\n
                                 Your order is confirmed. Kindly check the items and rates.\n
@@ -62,7 +62,7 @@ def on_sales_order(doc, customer_name, method):
                                 \n
                                 From:\n
                                 Vijay Mamra Private Limited"""
-            message = message_template.format(customer_name=customer_name)
+            message = message_template.format(customer_name=doc.customer_name)
             enqueue(
                 "vijay_whatsapp.api.create_and_store_file",
                 doc=doc,
@@ -79,7 +79,7 @@ def on_sales_order(doc, customer_name, method):
 
 
 @frappe.whitelist()
-def on_sales_invoice(doc, customer_name, truck_no, driver_mobile_no, method):
+def on_sales_invoice(doc, method):
     """
     for send whatsapp notification map whatsapp number and create file on sales invoice doctype
     """
@@ -116,7 +116,7 @@ def on_sales_invoice(doc, customer_name, truck_no, driver_mobile_no, method):
                     whatsapp_no.append(wpn.whatsapp_no)
 
             # message = 'Your+Sales+Invoice+is+Created.'
-              # Prepare the message
+            # Prepare the message
             message_template = """Dear Sir,
                                 {customer_name}
                                 We dispatched your order by
@@ -128,9 +128,9 @@ def on_sales_invoice(doc, customer_name, truck_no, driver_mobile_no, method):
                                 From:
                                 Vijay Mamra Private Limited"""
             message = message_template.format(
-                customer_name=customer_name,
-                truck_no=truck_no,
-                driver_mobile_no=driver_mobile_no
+                customer_name= doc.customer_name,
+                truck_no= doc.custom_truck_no,
+                driver_mobile_no= doc.custom_driver_mobile_no,
             )
 
             enqueue(

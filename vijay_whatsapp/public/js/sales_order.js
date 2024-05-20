@@ -17,7 +17,6 @@ frappe.ui.form.on('Sales Order', {
                             method: 'vijay_whatsapp.api.on_sales_order',
                             args:{
                             'doc': frm.doc.name,
-                            'customer_name':frm.doc.customer_name,
                             'method': 'whitelist'
                             },
                             callback: function(r) {
